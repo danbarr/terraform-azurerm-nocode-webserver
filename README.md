@@ -1,4 +1,4 @@
-# Terraform module nocode-webserver-azure
+# Terraform module azurerm-nocode-webserver
 
 Provisions a simple nginx webserver with sample HashiCafe website in Azure.
 
