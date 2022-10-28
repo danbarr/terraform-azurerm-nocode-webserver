@@ -138,6 +138,13 @@ resource "azurerm_public_ip" "hashiapp-pip" {
   resource_group_name = azurerm_resource_group.myresourcegroup.name
   allocation_method   = "Dynamic"
   domain_name_label   = "${var.prefix}-app"
+
+  lifecycle {
+    postcondition {
+      condition     = self.fqdn != ""
+      error_message = "The public IP failed to assign an FQDN."
+    }
+  }
 }
 
 resource "azurerm_linux_virtual_machine" "hashiapp" {
@@ -154,9 +161,9 @@ resource "azurerm_linux_virtual_machine" "hashiapp" {
     caching              = "ReadWrite"
   }
 
-  computer_name  = var.prefix
-  admin_username = var.admin_username
-  admin_password = var.admin_password
+  computer_name                   = var.prefix
+  admin_username                  = var.admin_username
+  admin_password                  = var.admin_password
   disable_password_authentication = false
 
   tags = {
@@ -166,6 +173,23 @@ resource "azurerm_linux_virtual_machine" "hashiapp" {
 
   # Added to allow destroy to work correctly.
   depends_on = [azurerm_network_interface_security_group_association.hashiapp-nic-sg-assoc]
+
+  lifecycle {
+    precondition {
+      condition     = data.hcp_packer_image.ubuntu-webserver.region == var.location
+      error_message = "The selected image must be in the same region as the deployed resources."
+    }
+
+    postcondition {
+      condition     = self.source_image_id == data.hcp_packer_image.ubuntu-webserver.cloud_image_id
+      error_message = "A newer source image is available in the HCP Packer channel, please re-deploy."
+    }
+
+    postcondition {
+      condition     = self.os_disk[0].disk_size_gb >= 10 && self.os_disk[0].disk_size_gb < 100
+      error_message = "The OS disk must be at least 10GB and less than 100GB."
+    }
+  }
 }
 
 # We're using a little trick here so we can run the provisioner without
