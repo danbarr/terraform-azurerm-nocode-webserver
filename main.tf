@@ -202,14 +202,18 @@ resource "null_resource" "configure-web-app" {
     build_number = local.timestamp
   }
 
+  connection {
+    type     = "ssh"
+    user     = var.admin_username
+    password = var.admin_password
+    host     = azurerm_public_ip.hashiapp-pip.fqdn
+  }
+
   provisioner "remote-exec" {
-    inline = ["sudo chown -R ${var.admin_username} /var/www/html"]
-    connection {
-      type     = "ssh"
-      user     = var.admin_username
-      password = var.admin_password
-      host     = azurerm_public_ip.hashiapp-pip.fqdn
-    }
+    inline = [
+      "sudo mkdir /var/www/html/img",
+      "sudo chown -R ${var.admin_username} /var/www/html"
+    ]
   }
 
   provisioner "file" {
@@ -219,12 +223,10 @@ resource "null_resource" "configure-web-app" {
       product_image = var.hashi_products[random_integer.product.result].image_file
     })
     destination = "/var/www/html/index.html"
+  }
 
-    connection {
-      type     = "ssh"
-      user     = var.admin_username
-      password = var.admin_password
-      host     = azurerm_public_ip.hashiapp-pip.fqdn
-    }
+  provisioner "file" {
+    source      = "files/img/"
+    destination = "/var/www/html/img"
   }
 }
