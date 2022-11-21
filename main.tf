@@ -166,6 +166,19 @@ resource "azurerm_linux_virtual_machine" "hashiapp" {
   admin_password                  = var.admin_password
   disable_password_authentication = false
 
+  custom_data = base64encode(<<-EOF
+    #!/bin/bash
+
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+    apt-get -qy update
+    apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install nginx
+    systemctl enable nginx --now
+    ufw allow http
+    mkdir -p /var/www/html/img
+    chown -R ${var.admin_username} /var/www/html
+  EOF
+  )
+
   tags = {
     environment = var.env
     application = "HashiCafe website"
@@ -210,10 +223,8 @@ resource "null_resource" "configure-web-app" {
   }
 
   provisioner "remote-exec" {
-    inline = [
-      "sudo mkdir /var/www/html/img",
-      "sudo chown -R ${var.admin_username} /var/www/html"
-    ]
+    # We need to wait for cloud-init to finish so permissions are correct.
+    inline = ["/usr/bin/cloud-init status --wait"]
   }
 
   provisioner "file" {
