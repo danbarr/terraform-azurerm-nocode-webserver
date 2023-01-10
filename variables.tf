@@ -35,7 +35,7 @@ variable "vm_size" {
 variable "packer_bucket" {
   type        = string
   description = "HCP Packer image bucket name."
-  default     = "ubuntu-focal-webserver"
+  default     = "ubuntu20-nginx"
 }
 
 variable "packer_channel" {
