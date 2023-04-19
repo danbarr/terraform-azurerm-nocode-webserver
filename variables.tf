@@ -6,7 +6,6 @@ variable "prefix" {
 variable "location" {
   type        = string
   description = "The region where the virtual network is created."
-  default     = "centralus"
 }
 
 variable "env" {
