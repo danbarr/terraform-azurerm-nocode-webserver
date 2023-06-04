@@ -26,6 +26,12 @@ provider "azurerm" {
 
 locals {
   timestamp = timestamp()
+
+  common_tags = {
+    environment = var.env
+    department  = var.department
+    application = "HashiCafe website"
+  }
 }
 
 resource "random_integer" "product" {
@@ -51,12 +57,7 @@ data "hcp_packer_image" "ubuntu-webserver" {
 resource "azurerm_resource_group" "myresourcegroup" {
   name     = "${var.prefix}-demo-webapp"
   location = var.location
-
-  tags = {
-    environment = var.env
-    department  = "TPMM"
-    application = "HashiCafe website"
-  }
+  tags     = local.common_tags
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -64,6 +65,7 @@ resource "azurerm_virtual_network" "vnet" {
   location            = azurerm_resource_group.myresourcegroup.location
   address_space       = [var.address_space]
   resource_group_name = azurerm_resource_group.myresourcegroup.name
+  tags                = local.common_tags
 }
 
 resource "azurerm_subnet" "subnet" {
@@ -77,6 +79,7 @@ resource "azurerm_network_security_group" "hashiapp-sg" {
   name                = "${var.prefix}-sg"
   location            = var.location
   resource_group_name = azurerm_resource_group.myresourcegroup.name
+  tags                = local.common_tags
 
   security_rule {
     name                       = "HTTP"
@@ -119,6 +122,7 @@ resource "azurerm_network_interface" "hashiapp-nic" {
   name                = "${var.prefix}-hashiapp-nic"
   location            = var.location
   resource_group_name = azurerm_resource_group.myresourcegroup.name
+  tags                = local.common_tags
 
   ip_configuration {
     name                          = "${var.prefix}ipconfig"
@@ -139,6 +143,7 @@ resource "azurerm_public_ip" "hashiapp-pip" {
   resource_group_name = azurerm_resource_group.myresourcegroup.name
   allocation_method   = "Dynamic"
   domain_name_label   = "${var.prefix}-app"
+  tags                = local.common_tags
 
   lifecycle {
     postcondition {
@@ -155,6 +160,7 @@ resource "azurerm_linux_virtual_machine" "hashiapp" {
   size                  = var.vm_size
   source_image_id       = data.hcp_packer_image.ubuntu-webserver.cloud_image_id
   network_interface_ids = [azurerm_network_interface.hashiapp-nic.id]
+  tags                  = local.common_tags
 
   os_disk {
     name                 = "${var.prefix}-osdisk"
@@ -179,11 +185,6 @@ resource "azurerm_linux_virtual_machine" "hashiapp" {
     chown -R ${var.admin_username} /var/www/html
   EOF
   )
-
-  tags = {
-    environment = var.env
-    application = "HashiCafe website"
-  }
 
   # Added to allow destroy to work correctly.
   depends_on = [azurerm_network_interface_security_group_association.hashiapp-nic-sg-assoc]

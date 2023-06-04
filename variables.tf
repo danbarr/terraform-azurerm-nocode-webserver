@@ -13,6 +13,12 @@ variable "env" {
   description = "Value for the environment tag."
 }
 
+variable "department" {
+  type        = string
+  description = "Value for the department tag."
+  default     = "WebDev"
+}
+
 variable "address_space" {
   type        = string
   description = "The address space that is used by the virtual network. You can supply more than one address space. Changing this forces a new resource to be created."
