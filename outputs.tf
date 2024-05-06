@@ -3,7 +3,7 @@ output "hashiapp_url" {
 }
 
 output "base_image" {
-  value = data.hcp_packer_image.ubuntu-webserver.labels["managed_image_name"]
+  value = data.hcp_packer_artifact.ubuntu-webserver.labels["managed_image_name"]
 }
 
 output "product" {

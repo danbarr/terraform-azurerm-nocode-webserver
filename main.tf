@@ -7,7 +7,7 @@ terraform {
     }
     hcp = {
       source  = "hashicorp/hcp"
-      version = "~> 0.57"
+      version = "~> 0.82"
     }
     null = {
       source  = "hashicorp/null"
@@ -42,11 +42,11 @@ resource "random_integer" "product" {
   }
 }
 
-data "hcp_packer_image" "ubuntu-webserver" {
-  bucket_name    = var.packer_bucket
-  channel        = var.packer_channel
-  cloud_provider = "azure"
-  region         = var.location
+data "hcp_packer_artifact" "ubuntu-webserver" {
+  bucket_name  = var.packer_bucket
+  channel_name = var.packer_channel
+  platform     = "azure"
+  region       = var.location
 }
 
 resource "azurerm_resource_group" "myresourcegroup" {
@@ -153,7 +153,7 @@ resource "azurerm_linux_virtual_machine" "hashiapp" {
   location              = var.location
   resource_group_name   = azurerm_resource_group.myresourcegroup.name
   size                  = var.vm_size
-  source_image_id       = data.hcp_packer_image.ubuntu-webserver.cloud_image_id
+  source_image_id       = data.hcp_packer_artifact.ubuntu-webserver.external_identifier
   network_interface_ids = [azurerm_network_interface.hashiapp-nic.id]
   tags                  = local.common_tags
 
@@ -186,12 +186,12 @@ resource "azurerm_linux_virtual_machine" "hashiapp" {
 
   lifecycle {
     precondition {
-      condition     = data.hcp_packer_image.ubuntu-webserver.region == var.location
+      condition     = data.hcp_packer_artifact.ubuntu-webserver.region == var.location
       error_message = "The selected image must be in the same region as the deployed resources."
     }
 
     postcondition {
-      condition     = self.source_image_id == data.hcp_packer_image.ubuntu-webserver.cloud_image_id
+      condition     = self.source_image_id == data.hcp_packer_artifact.ubuntu-webserver.external_identifier
       error_message = "A newer source image is available in the HCP Packer channel, please re-deploy."
     }
 
