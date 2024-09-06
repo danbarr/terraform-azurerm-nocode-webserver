@@ -30,10 +30,6 @@ Also requires environment variables containing an HCP service principal credenti
 | <a name="provider_null"></a> [null](#provider\_null) | ~> 3.1 |
 | <a name="provider_random"></a> [random](#provider\_random) | ~> 3.4 |
 
-## Modules
-
-No modules.
-
 ## Resources
 
 | Name | Type |
@@ -54,16 +50,16 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_env"></a> [env](#input\_env) | Value for the environment tag. | `string` | n/a | yes |
+| <a name="input_location"></a> [location](#input\_location) | The region where the virtual network is created. | `string` | n/a | yes |
+| <a name="input_prefix"></a> [prefix](#input\_prefix) | This prefix will be included in the name of most resources. | `string` | n/a | yes |
 | <a name="input_address_space"></a> [address\_space](#input\_address\_space) | The address space that is used by the virtual network. You can supply more than one address space. Changing this forces a new resource to be created. | `string` | `"10.0.0.0/16"` | no |
 | <a name="input_admin_password"></a> [admin\_password](#input\_admin\_password) | Administrator password for OS. | `string` | `"Password123!"` | no |
 | <a name="input_admin_username"></a> [admin\_username](#input\_admin\_username) | Administrator user name for OS. | `string` | `"hashicorp"` | no |
 | <a name="input_department"></a> [department](#input\_department) | Value for the department tag. | `string` | `"WebDev"` | no |
-| <a name="input_env"></a> [env](#input\_env) | Value for the environment tag. | `string` | n/a | yes |
 | <a name="input_hashi_products"></a> [hashi\_products](#input\_hashi\_products) | n/a | <pre>list(object({<br>    name       = string<br>    color      = string<br>    image_file = string<br>  }))</pre> | <pre>[<br>  {<br>    "color": "#dc477d",<br>    "image_file": "hashicafe_art_consul.png",<br>    "name": "Consul"<br>  },<br>  {<br>    "color": "#ffffff",<br>    "image_file": "hashicafe_art_hcp.png",<br>    "name": "HCP"<br>  },<br>  {<br>    "color": "#60dea9",<br>    "image_file": "hashicafe_art_nomad.png",<br>    "name": "Nomad"<br>  },<br>  {<br>    "color": "#63d0ff",<br>    "image_file": "hashicafe_art_packer.png",<br>    "name": "Packer"<br>  },<br>  {<br>    "color": "#844fba",<br>    "image_file": "hashicafe_art_terraform.png",<br>    "name": "Terraform"<br>  },<br>  {<br>    "color": "#2e71e5",<br>    "image_file": "hashicafe_art_vagrant.png",<br>    "name": "Vagrant"<br>  },<br>  {<br>    "color": "#ffec6e",<br>    "image_file": "hashicafe_art_vault.png",<br>    "name": "Vault"<br>  }<br>]</pre> | no |
-| <a name="input_location"></a> [location](#input\_location) | The region where the virtual network is created. | `string` | n/a | yes |
 | <a name="input_packer_bucket"></a> [packer\_bucket](#input\_packer\_bucket) | HCP Packer image bucket name. | `string` | `"ubuntu22-nginx"` | no |
 | <a name="input_packer_channel"></a> [packer\_channel](#input\_packer\_channel) | HCP Packer image channel. | `string` | `"production"` | no |
-| <a name="input_prefix"></a> [prefix](#input\_prefix) | This prefix will be included in the name of most resources. | `string` | n/a | yes |
 | <a name="input_subnet_prefix"></a> [subnet\_prefix](#input\_subnet\_prefix) | The address prefix to use for the subnet. | `string` | `"10.0.10.0/24"` | no |
 | <a name="input_vm_size"></a> [vm\_size](#input\_vm\_size) | Specifies the size of the virtual machine. | `string` | `"Standard_B2s"` | no |
 
